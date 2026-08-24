@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Data Jemaat - GSKI Rhema Sentul</title>
+    <!-- Font Awesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN untuk Grafik Demografi -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-navy: #0b1c3d;
+            --secondary-navy: #162b50;
+            --gold-accent: #c5a059;
+            --gold-hover: #b08c46;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-dark: #222222;
+            --text-muted: #666666;
+            --border-color: #e2e8f0;
+            --success-color: #2e7d32;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Header Info Bar */
+        .top-bar {
+            background-color: var(--primary-navy);
+            color: #d1d5db;
+            font-size: 0.82rem;
+            padding: 0.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+        }
+
+        .top-bar-info {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .top-bar-info span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-bar-info i {
+            color: var(--gold-accent);
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: var(--secondary-navy);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .navbar-logo {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            background-color: transparent !important;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.4rem;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            padding: 0.4rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-links a:hover, .nav-links a.active-link {
+            color: var(--gold-accent);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Container Main Content */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            flex: 1;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, rgba(11, 28, 61, 0.92), rgba(22, 43, 80, 0.88)), 
+                        url('https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 3rem 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            box-shadow: 0 10px 25px rgba(11, 28, 61, 0.15);
+            border-left: 6px solid var(--gold-accent);
+        }
+
+        .hero-logo-wrapper {
+            flex-shrink: 0;
+        }
+
+        .hero-logo {
+            width: 130px;
+            height: auto;
+            object-fit: contain;
+            background: transparent !important;
+            padding: 0;
+            border-radius: 0;
+            box-shadow: none;
+            display: block;
+        }
+
+        .hero-content {
+            flex-grow: 1;
+            text-align: left;
+        }
+
+        .greeting-badge {
+            display: inline-block;
+            background-color: var(--gold-accent);
+            color: var(--primary-navy);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+            line-height: 1.3;
+        }
+
+        .hero-desc {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            max-width: 900px;
+        }
+
+        .bible-verse {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            border-left: 4px solid var(--gold-accent);
+            padding: 0.85rem 1.1rem;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .bible-verse h4 {
+            color: var(--gold-accent);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .bible-verse p {
+            font-style: italic;
+            font-size: 0.84rem;
+            line-height: 1.45;
+            color: #f7fafc;
+        }
+
+        /* Dashboard Grid Cards */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 1.8rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-navy);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-top-color: var(--gold-accent);
+        }
+
+        .card-icon {
+            font-size: 1.8rem;
+            color: var(--gold-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-navy);
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Section Styling */
+        .content-section {
+            display: none;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid var(--border-color);
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Form Header & Title Styling */
+        .form-header {
+            margin-bottom: 1.75rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.85rem;
+        }
+
+        .form-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-navy);
+            font-size: 1.45rem;
+            font-weight: 700;
+        }
+
+        .form-section-title {
+            background-color: #f1f5f9;
+            color: var(--primary-navy);
+            padding: 0.65rem 1rem;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            border-left: 4px solid var(--gold-accent);
+            border-radius: 4px;
+            margin: 1.75rem 0 1rem 0;
+            font-size: 0.98rem;
+            letter-spacing: 0.3px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            padding: 0.7rem 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #ffffff;
+            width: 100%;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 0 3px rgba(197, 160, 89, 0.2);
+        }
+
+        .form-group input[readonly] {
+            background-color: #f8fafc;
+            color: #64748b;
+            cursor: not-allowed;
+            border-color: #e2e8f0;
+        }
+
+        .anak-box {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .anak-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--secondary-navy);
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .btn-submit {
+            background-color: var(--primary-navy);
+            color: white;
+            border: none;
+            padding: 0.9rem 2.2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(11, 28, 61, 0.2);
+        }
+
+        .btn-submit:hover {
+            background-color: var(--gold-accent);
+            color: #ffffff;
+            box-shadow: 0 6px 15px rgba(197, 160, 89, 0.3);
+        }
+
+        /* Layout Demografi & Grafik */
+        .charts-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.75rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .chart-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chart-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-navy);
+            margin-bottom: 1.1rem;
+            font-size: 0.98rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .chart-container-box {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+
+        /* Table Styling */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.2rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+
+        table.data-table th, table.data-table td {
+            border: 1px solid var(--border-color);
+            padding: 0.8rem 0.95rem;
+            text-align: left;
+        }
+
+        table.data-table th {
+            background-color: var(--primary-navy);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        table.data-table tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        table.data-table tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        /* Loading Indicator */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 28, 61, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--gold-accent);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Pillars Grid Styling */
+        .pilar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .pilar-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-top: 5px solid var(--gold-accent);
+            border-radius: 10px;
+            padding: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .pilar-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-navy);
+            font-size: 1.15rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pilar-card h3 i {
+            color: var(--gold-accent);
+        }
+
+        .admin-lock-box {
+            background-color: #fff9f0;
+            border: 1px solid #ffe8cc;
+            color: #8c5b00;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .admin-lock-box h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            color: var(--primary-navy);
+        }
+
+        .btn-admin {
+            background-color: var(--gold-accent);
+            color: white;
+            padding: 0.65rem 1.6rem;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+            text-transform: uppercase;
+            font-size: 0.82rem;
+        }
+
+        .btn-admin:hover {
+            background-color: var(--gold-hover);
+        }
+
+        /* Article Card */
+        .article-card {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-left: 4px solid var(--gold-accent);
+        }
+
+        .article-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary-navy);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .article-meta {
+            font-size: 0.82rem;
+            color: var(--gold-accent);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .article-body {
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: #334155;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--primary-navy);
+            color: #94a3b8;
+            padding: 3rem 2rem 1.5rem 2rem;
+            margin-top: auto;
+            border-top: 4px solid var(--gold-accent);
+            width: 100%;
+        }
+
+        .footer-grid {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-col h4 {
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 1.1rem;
+            position: relative;
+            padding-bottom: 0.45rem;
+        }
+
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 35px;
+            height: 2px;
+            background-color: var(--gold-accent);
+        }
+
+        .footer-col p {
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.82rem;
+        }
+
+        @media (max-width: 992px) {
+            .navbar { flex-wrap: wrap; padding: 0.75rem 1rem; }
+            .menu-toggle { display: block; }
+            .nav-links { display: none; flex-direction: column; width: 100%; margin-top: 0.75rem; gap: 0.4rem; align-items: stretch; }
+            .nav-links.show { display: flex; }
+            .nav-links a { padding: 0.6rem 0.8rem; font-size: 0.85rem; }
+            .charts-wrapper { grid-template-columns: 1fr; }
+            .top-bar { flex-direction: column; gap: 0.5rem; text-align: center; padding: 0.5rem 1rem; }
+            .top-bar-info { justify-content: center; }
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 0 0.75rem; margin: 1.5rem auto; }
+            .hero { flex-direction: column; text-align: center; padding: 2rem 1.25rem; }
+            .hero-content { text-align: center; }
+            .hero h1 { font-size: 1.35rem; }
+            .bible-verse { text-align: left; }
+            .form-grid { grid-template-columns: 1fr; }
+            .content-section { padding: 1.25rem 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div style="text-align: center;">
+            <div class="loading-spinner"></div>
+            <div id="loadingText">Menyimpan data ke Spreadsheet...</div>
+        </div>
+    </div>
+
+    <!-- Top Bar Info -->
+    <div class="top-bar">
+        <div class="top-bar-info">
+            <span><i class="fa-solid fa-location-dot"></i> Sentul City, Bogor</span>
+            <span><i class="fa-solid fa-phone"></i> (021) 1234-5678</span>
+            <span><i class="fa-solid fa-envelope"></i> info@gskirhemasentul.org</span>
+        </div>
+        <div id="currentDateTime" style="font-weight: 500; color: var(--gold-accent);"></div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <img src="Logo_GSKI.svg-removebg-preview.png" alt="Logo GSKI" class="navbar-logo" onerror="this.src='https://via.placeholder.com/40?text=GSKI'">
+            <span>GSKI Rhema Sentul</span>
+        </div>
+        <button class="menu-toggle" onclick="toggleMenu()" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home" id="nav-home" class="active-link" onclick="showSection('home')">Home</a></li>
+            <li><a href="#pilar" id="nav-pilar" onclick="showSection('pilar')">3 Pilar GSKI</a></li>
+            <li><a href="#jemaat" id="nav-jemaat" onclick="showSection('jemaat')">Pendataan Jemaat</a></li>
+            <li><a href="#tabel-jemaat" id="nav-tabel-jemaat" onclick="showSection('tabel-jemaat')">Tabel & Demografi</a></li>
+            <li><a href="#keuangan" id="nav-keuangan" onclick="showSection('keuangan')">Keuangan & Aset</a></li>
+            <li><a href="#jadwal" id="nav-jadwal" onclick="showSection('jadwal')">Jadwal & Presensi</a></li>
+            <li><a href="#renungan" id="nav-renungan" onclick="showSection('renungan')">Renungan Harian</a></li>
+            <li><a href="#berita" id="nav-berita" onclick="showSection('berita')">Pojok Berita</a></li>
+            <li><a href="https://rehobot.org/category/lagu/" target="_blank" id="nav-lagu"><i class="fa-solid fa-music"></i> Lagu Rohani</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="container">
+
+        <!-- Home Section -->
+        <div id="home" class="content-section active">
+            <div class="hero">
+                <div class="hero-logo-wrapper">
+                    <img src="Logo_GSKI.svg-removebg-preview.png" alt="Logo GSKI" class="hero-logo" onerror="this.src='https://via.placeholder.com/130?text=GSKI'">
+                </div>
+                <div class="hero-content">
+                    <div id="realtimeGreeting" class="greeting-badge">Selamat Pagi</div>
+                    <h1>Gereja Suara Kebenaran Injil Rhema Sentul</h1>
+                    <p class="hero-desc">Aplikasi gereja berguna untuk memudahkan pengurus mengelola data jemaat, keuangan, dan jadwal, serta membantu jemaat mengakses ibadah, warta, dan pendaftaran kegiatan secara online.</p>
+                    
+                    <div class="bible-verse">
+                        <h4 id="randomVerseTitle"><i class="fa-solid fa-book-bible"></i> Wahyu 21:1-2</h4>
+                        <p id="randomVerseText">"Lalu aku melihat langit yang baru dan bumi yang baru, sebab langit yang pertama dan bumi yang pertama telah berlalu, dan laut pun tidak ada lagi."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-container">
+                <div class="card" onclick="showSection('pilar')">
+                    <div class="card-icon"><i class="fa-solid fa-landmark"></i></div>
+                    <h3>3 Pilar GSKI</h3>
+                    <p>Mengenal prinsip dasar Kesucian, Tanggung Jawab, serta Langit & Bumi Baru.</p>
+                </div>
+                <div class="card" onclick="showSection('jemaat')">
+                    <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+                    <h3>Pendataan Jemaat</h3>
+                    <p>Menyimpan nama, alamat, dan kartu keluarga secara rapi dalam satu tempat.</p>
+                </div>
+                <div class="card" onclick="showSection('tabel-jemaat')">
+                    <div class="card-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h3>Tabel & Demografi</h3>
+                    <p>Melihat daftar data jemaat dan grafik statistik demografi usia & jenis kelamin.</p>
+                </div>
+                <div class="card" onclick="showSection('keuangan')">
+                    <div class="card-icon"><i class="fa-solid fa-wallet"></i></div>
+                    <h3>Keuangan & Aset</h3>
+                    <p>Mencatat persembahan kas, donasi, serta inventaris barang milik gereja.</p>
+                </div>
+                <div class="card" onclick="showSection('jadwal')">
+                    <div class="card-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h3>Jadwal & Presensi</h3>
+                    <p>Pengaturan jadwal ibadah dan pencatatan presensi beserta jumlah jemaat hadir.</p>
+                </div>
+                <div class="card" onclick="showSection('renungan')">
+                    <div class="card-icon"><i class="fa-solid fa-book-open-reader"></i></div>
+                    <h3>Renungan Harian</h3>
+                    <p>Renungan Harian dari Bapak Gembala/Pengerja GSKI Rhema.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3 Pilar GSKI -->
+        <div id="pilar" class="content-section">
+            <div class="form-header">
+                <h2>3 Pilar Utama GSKI</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Landasan rohani dan standar kehidupan rohani jemaat Gereja Suara Kebenaran Injil.</p>
+            </div>
+            <div class="pilar-grid">
+                <div class="pilar-card">
+                    <h3><i class="fa-solid fa-shield-halved"></i> Kesucian</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Standar kehidupan serupa dan segambar dengan Allah yang harus dipulihkan dalam diri orang percaya setelah jatuh ke dalam dosa.</p>
+                </div>
+                <div class="pilar-card">
+                    <h3><i class="fa-solid fa-scale-balanced"></i> Tanggung Jawab</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Kesadaran dan komitmen untuk hidup taat, melakukan kehendak Tuhan, serta bekerja dengan integritas.</p>
+                </div>
+                <div class="pilar-card">
+                    <h3><i class="fa-solid fa-earth-americas"></i> Langit & Bumi Baru</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;">Pengarahan fokus hidup orang percaya pada kekekalan dan penggenapan janji Allah di masa depan.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Form Pendataan Jemaat -->
+        <div id="jemaat" class="content-section">
+            <div class="form-header">
+                <h2>Formulir Pendataan Jemaat</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Silakan isi formulir di bawah ini secara lengkap untuk pendataan keluarga jemaat GSKI Rhema Sentul.</p>
+            </div>
+
+            <form id="formJemaat" onsubmit="simpanData(event)">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="nij">Nomor Induk Jemaat (NIJ) - Otomatis</label>
+                        <input type="text" id="nij" name="nij" readonly style="font-weight: bold; color: var(--primary-navy);">
+                    </div>
+                </div>
+
+                <!-- Data Kepala Keluarga -->
+                <div class="form-section-title"><i class="fa-solid fa-user"></i> A. Data Kepala Keluarga</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="namaKK">Nama Kepala Keluarga *</label>
+                        <input type="text" id="namaKK" name="namaKK" placeholder="Nama Lengkap Suami / KK" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tglLahirKK">Tanggal Lahir *</label>
+                        <input type="date" id="tglLahirKK" name="tglLahirKK" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tlpKK">Nomor Telepon/WA Aktif *</label>
+                        <input type="tel" id="tlpKK" name="tlpKK" placeholder="Contoh: 081234567890" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pekerjaanKK">Pekerjaan Suami *</label>
+                        <input type="text" id="pekerjaanKK" name="pekerjaanKK" placeholder="Pekerjaan / Instansi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jkKK">Jenis Kelamin</label>
+                        <input type="text" id="jkKK" name="jkKK" value="Laki-laki" readonly>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="alamat">Alamat Tempat Tinggal (Domisili) *</label>
+                        <textarea id="alamat" name="alamat" rows="3" placeholder="Alamat lengkap domisili saat ini" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Data Istri -->
+                <div class="form-section-title"><i class="fa-solid fa-user-female"></i> B. Data Istri</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="namaIstri">Nama Istri</label>
+                        <input type="text" id="namaIstri" name="namaIstri" placeholder="Nama Lengkap Istri">
+                    </div>
+                    <div class="form-group">
+                        <label for="tglLahirIstri">Tanggal Lahir Istri</label>
+                        <input type="date" id="tglLahirIstri" name="tglLahirIstri">
+                    </div>
+                    <div class="form-group">
+                        <label for="tlpIstri">Nomor Telepon/WA Istri Aktif</label>
+                        <input type="tel" id="tlpIstri" name="tlpIstri" placeholder="Contoh: 081234567890">
+                    </div>
+                    <div class="form-group">
+                        <label for="jkIstri">Jenis Kelamin</label>
+                        <input type="text" id="jkIstri" name="jkIstri" value="Perempuan" readonly>
+                    </div>
+                </div>
+
+                <!-- Data Anak 1 - 4 -->
+                <div class="form-section-title"><i class="fa-solid fa-children"></i> C. Data Anak (Maksimal 4 Anak)</div>
+                
+                <div class="anak-box">
+                    <div class="anak-title">Anak Ke-1</div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nama Anak 1</label><input type="text" id="namaAnak1" placeholder="Nama Lengkap"></div>
+                        <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="tglLahirAnak1"></div>
+                        <div class="form-group"><label>Jenis Kelamin</label>
+                            <select id="jkAnak1"><option value="">-- Pilih --</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anak-box">
+                    <div class="anak-title">Anak Ke-2</div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nama Anak 2</label><input type="text" id="namaAnak2" placeholder="Nama Lengkap"></div>
+                        <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="tglLahirAnak2"></div>
+                        <div class="form-group"><label>Jenis Kelamin</label>
+                            <select id="jkAnak2"><option value="">-- Pilih --</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anak-box">
+                    <div class="anak-title">Anak Ke-3</div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nama Anak 3</label><input type="text" id="namaAnak3" placeholder="Nama Lengkap"></div>
+                        <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="tglLahirAnak3"></div>
+                        <div class="form-group"><label>Jenis Kelamin</label>
+                            <select id="jkAnak3"><option value="">-- Pilih --</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anak-box">
+                    <div class="anak-title">Anak Ke-4</div>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nama Anak 4</label><input type="text" id="namaAnak4" placeholder="Nama Lengkap"></div>
+                        <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="tglLahirAnak4"></div>
+                        <div class="form-group"><label>Jenis Kelamin</label>
+                            <select id="jkAnak4"><option value="">-- Pilih --</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> Simpan Data Jemaat</button>
+            </form>
+        </div>
+
+        <!-- Section Tabel & Demografi -->
+        <div id="tabel-jemaat" class="content-section">
+            <div class="form-header">
+                <h2>Daftar Tabel & Demografi Jemaat</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Statistik demografi usia, jenis kelamin, dan daftar seluruh jemaat GSKI Rhema Sentul.</p>
+            </div>
+
+            <div class="charts-wrapper">
+                <div class="chart-card">
+                    <h4>Demografi Jenis Kelamin</h4>
+                    <div class="chart-container-box"><canvas id="chartGender"></canvas></div>
+                </div>
+                <div class="chart-card">
+                    <h4>Demografi Rentang Usia Jemaat</h4>
+                    <div class="chart-container-box"><canvas id="chartUsia"></canvas></div>
+                </div>
+            </div>
+
+            <div class="form-section-title"><i class="fa-solid fa-table"></i> Data Seluruh Kepala Keluarga & Anggota</div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>NIJ</th>
+                            <th>Kepala Keluarga</th>
+                            <th>Usia KK</th>
+                            <th>No. Telp KK</th>
+                            <th>Nama Istri</th>
+                            <th>Usia Istri</th>
+                            <th>Alamat Domisili</th>
+                            <th>Jumlah Anak</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyTabelJemaat"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modul Keuangan dan Inventaris -->
+        <div id="keuangan" class="content-section">
+            <div class="form-header">
+                <h2>Modul Keuangan dan Inventaris</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Pencatatan kas persembahan gereja serta pengelolaan inventaris fasilitas dan aset.</p>
+            </div>
+
+            <div class="form-section-title"><i class="fa-solid fa-cash-register"></i> Pencatatan Transaksi Keuangan</div>
+            <form onsubmit="tambahKeuangan(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ketKeuangan">Keterangan Transaksi *</label>
+                        <input type="text" id="ketKeuangan" placeholder="Contoh: Persembahan Ibadah Raya Minggu" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipeKeuangan">Jenis Transaksi *</label>
+                        <select id="tipeKeuangan" required>
+                            <option value="Pemasukan">Pemasukan</option>
+                            <option value="Pengeluaran">Pengeluaran</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nominalKeuangan">Jumlah (Rp) *</label>
+                        <input type="number" id="nominalKeuangan" placeholder="Contoh: 1500000" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" style="margin-top: 1rem;"><i class="fa-solid fa-plus"></i> Tambah Catatan Keuangan</button>
+            </form>
+
+            <div class="table-responsive" style="margin-top: 1.5rem;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Keterangan</th>
+                            <th>Jenis</th>
+                            <th>Nominal (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelKeuanganBody"></tbody>
+                </table>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 2.5rem;"><i class="fa-solid fa-boxes-stacked"></i> Inventaris Aset Gereja</div>
+            <form onsubmit="tambahInventaris(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="namaBarang">Nama Barang / Aset *</label>
+                        <input type="text" id="namaBarang" placeholder="Contoh: Sound Mixer Yamaha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jumlahBarang">Jumlah (Unit) *</label>
+                        <input type="number" id="jumlahBarang" placeholder="Contoh: 1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kondisiBarang">Kondisi *</label>
+                        <select id="kondisiBarang" required>
+                            <option value="Baik">Baik</option>
+                            <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                            <option value="Rusak">Rusak</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit" style="margin-top: 1rem;"><i class="fa-solid fa-plus"></i> Tambah Aset Inventaris</button>
+            </form>
+
+            <div class="table-responsive" style="margin-top: 1.5rem;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Barang / Aset</th>
+                            <th>Jumlah</th>
+                            <th>Kondisi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelInventarisBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Jadwal & Presensi -->
+        <div id="jadwal" class="content-section">
+            <div class="form-header">
+                <h2>Jadwal & Presensi Ibadah</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Penjadwalan ibadah dan pencatatan presensi kehadiran beserta jumlah jemaat yang hadir.</p>
+            </div>
+
+            <div id="adminLockBox" class="admin-lock-box">
+                <h3><i class="fa-solid fa-lock"></i> Akses Terbatas Admin</h3>
+                <p style="margin-top: 6px; font-size: 0.9rem;">Hanya Administrator yang diperbolehkan menambah atau mengubah Jadwal & Presensi.</p>
+                <button class="btn-admin" onclick="loginAdmin()">Masuk Sebagai Admin</button>
+            </div>
+
+            <div id="adminJadwalContent" style="display: none; margin-top: 1.5rem;">
+                <div style="background-color: #f0fff4; border: 1px solid #9ae6b4; color: var(--success-color); padding: 0.85rem 1.25rem; border-radius: 8px; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; font-weight: 600;">
+                    <span><i class="fa-solid fa-circle-check"></i> Anda masuk sebagai Admin GSKI Rhema Sentul</span>
+                    <button onclick="logoutAdmin()" style="background: none; border: none; color: #c53030; font-weight: bold; cursor: pointer; text-decoration: underline;">Logout Admin</button>
+                </div>
+
+                <div class="form-section-title"><i class="fa-solid fa-calendar-plus"></i> Input Jadwal Ibadah Baru & Kehadiran</div>
+                <form onsubmit="tambahJadwal(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="namaIbadah">Nama Kegiatan Ibadah</label>
+                            <input type="text" id="namaIbadah" placeholder="Contoh: Ibadah Raya Minggu" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="waktuIbadah">Tanggal & Waktu</label>
+                            <input type="datetime-local" id="waktuIbadah" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pembicara">Pelayan Firman / Pembicara</label>
+                            <input type="text" id="pembicara" placeholder="Nama Pelayan Firman" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jumlahHadir">Jumlah Jemaat yang Hadir</label>
+                            <input type="number" id="jumlahHadir" placeholder="Contoh: 125" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-submit" style="margin-top: 1.25rem;">Terbitkan Jadwal & Presensi</button>
+                </form>
+            </div>
+
+            <div class="form-section-title" style="margin-top: 2rem;"><i class="fa-solid fa-list-check"></i> Daftar Jadwal & Presensi Kehadiran Jemaat</div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Kegiatan Ibadah</th>
+                            <th>Tanggal & Waktu</th>
+                            <th>Pelayan Firman</th>
+                            <th>Jumlah Jemaat Hadir</th>
+                            <th>Status Presensi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelJadwalBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section Renungan Harian -->
+        <div id="renungan" class="content-section">
+            <div class="form-header">
+                <h2>Renungan Harian GSKI Rhema</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Santapan rohani harian untuk bertumbuh dalam Kebenaran Injil.</p>
+            </div>
+            <div class="article-card">
+                <h3>Hidup Dalam Kebenaran Injil</h3>
+                <div class="article-meta">
+                    <span><i class="fa-solid fa-user-pen"></i> Bapak Gembala</span>
+                    <span><i class="fa-solid fa-book-bookmark"></i> Yohanes 8:32</span>
+                    <span id="renunganDate"><i class="fa-regular fa-calendar"></i> Hari ini</span>
+                </div>
+                <div class="article-body">
+                    <p><em>"Dan kamu akan mengenal kebenaran, dan kebenaran itu akan memerdekakan kamu."</em></p><br>
+                    <p>Mengenal kebenaran bukan sekadar tahu isi Alkitab secara intelektual, melainkan mengalami Kristus secara pribadi dan melakukan kehendak-Nya dalam kehidupan sehari-hari.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Pojok Berita -->
+        <div id="berita" class="content-section">
+            <div class="form-header">
+                <h2>Pojok Berita & Warta Jemaat</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Pengumuman resmi dan informasi kegiatan GSKI Rhema Sentul.</p>
+            </div>
+            <div class="article-card">
+                <h3>Warta Jemaat: Pelaksanaan Ibadah Raya Minggu Ini</h3>
+                <div class="article-meta">
+                    <span><i class="fa-regular fa-clock"></i> Diposting: Minggu Ini</span>
+                    <span><i class="fa-solid fa-tag"></i> Pengumuman Ibadah</span>
+                </div>
+                <div class="article-body">
+                    <p>Diberitahukan kepada seluruh jemaat GSKI Rhema Sentul bahwa Ibadah Raya Minggu akan dilaksanakan tepat pada pukul 09.00 WIB.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>GSKI Rhema Sentul</h4>
+                <p>Gereja Suara Kebenaran Injil bertumbuh dalam pengenalan akan kebenaran Alkitab dan pemutihan karakter menuju kesempurnaan Kristus.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Jadwal Ibadah</h4>
+                <p><strong>Ibadah Raya Minggu:</strong><br>08.30 WIB - Selesai</p>
+                <p><strong>Ibadah Pemuda & Remaja:</strong><br>Sabtu, 17.00 WIB</p>
+            </div>
+            <div class="footer-col">
+                <h4>Sekretariat & Alamat</h4>
+                <p><i class="fa-solid fa-location-dot"></i> Sentul City, Bogor, Jawa Barat</p>
+                <p><i class="fa-solid fa-phone"></i> 081282619123</p>
+                <p><i class="fa-solid fa-envelope"></i> gskirhemasc@gmail.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="yearCopy">2026</span> GusPur-GSKI Rhema Sentul. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyoua-EBk88fJjtsdpPckanOjstjuQaevfAfhwohvWGpPyNEfVBdTKktpLo0T7D3iC-/exec";
+
+        let dataJemaatList = [];
+        let dataKeuanganList = [];
+        let dataInventarisList = [];
+        let dataJadwalList = [];
+
+        let chartGenderInstance = null;
+        let chartUsiaInstance = null;
+
+        function showLoading(msg) {
+            document.getElementById('loadingText').textContent = msg || 'Memproses data...';
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function toggleMenu() {
+            document.getElementById('navLinks').classList.toggle('show');
+        }
+
+        const daftarAyat = [
+            { ref: "Wahyu 21:1-2", text: "Lalu aku melihat langit yang baru dan bumi yang baru, sebab langit yang pertama dan bumi yang pertama telah berlalu, dan laut pun tidak ada lagi." },
+            { ref: "Yohanes 8:32", text: "Dan kamu akan mengenal kebenaran, dan kebenaran itu akan memerdekakan kamu." },
+            { ref: "Mazmur 119:105", text: "Firman-Mu adalah pelita bagi kakiku dan terang bagi jalanku." },
+            { ref: "Amsal 3:5-6", text: "Percayalah kepada TUHAN dengan segenap hatimu, dan janganlah bersandar kepada pengertianmu sendiri." },
+            { ref: "Roma 12:2", text: "Janganlah kamu menjadi serupa dengan dunia ini, tetapi berubahlah oleh pembaharuan budimu..." }
+        ];
+
+        function updateDateTimeIndonesian() {
+            const now = new Date();
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+            const dayName = days[now.getDay()];
+            const dayNum = now.getDate();
+            const monthName = months[now.getMonth()];
+            const year = now.getFullYear();
+
+            const hours = now.getHours();
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            let sapaan = "Selamat Malam";
+            if (hours >= 3 && hours < 11) sapaan = "Selamat Pagi";
+            else if (hours >= 11 && hours < 15) sapaan = "Selamat Siang";
+            else if (hours >= 15 && hours < 18) sapaan = "Selamat Sore";
+
+            const greetingEl = document.getElementById('realtimeGreeting');
+            if(greetingEl) greetingEl.textContent = `${sapaan}, Jemaat GSKI Rhema Sentul`;
+
+            const verseIndex = dayNum % daftarAyat.length;
+            const chosenVerse = daftarAyat[verseIndex];
+            const vTitle = document.getElementById('randomVerseTitle');
+            const vText = document.getElementById('randomVerseText');
+            if(vTitle && vText) {
+                vTitle.innerHTML = `<i class="fa-solid fa-book-bible"></i> ${chosenVerse.ref}`;
+                vText.textContent = `"${chosenVerse.text}"`;
+            }
+
+            const formatted = `${dayName}, ${dayNum} ${monthName} ${year} | ${String(hours).padStart(2,'0')}.${minutes}.${seconds} WIB`;
+            const dtElement = document.getElementById('currentDateTime');
+            if (dtElement) dtElement.innerHTML = `<i class="fa-regular fa-clock"></i> ${formatted}`;
+
+            const renunganDate = document.getElementById('renunganDate');
+            if (renunganDate) renunganDate.innerHTML = `<i class="fa-regular fa-calendar"></i> ${dayName}, ${dayNum} ${monthName} ${year}`;
+            
+            const yr = document.getElementById('yearCopy');
+            if(yr) yr.textContent = year;
+        }
+
+        setInterval(updateDateTimeIndonesian, 1000);
+        updateDateTimeIndonesian();
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+
+            document.querySelectorAll('.nav-links a').forEach(link => link.classList.remove('active-link'));
+            const activeNav = document.getElementById(`nav-${sectionId}`);
+            if (activeNav) activeNav.classList.add('active-link');
+
+            document.getElementById('navLinks').classList.remove('show');
+
+            if(sectionId === 'tabel-jemaat') {
+                renderTabelJemaat();
+                updateCharts();
+            }
+        }
+
+        function generateNIJ() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const randomDigits = Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('nij').value = `GSKI-${year}${month}${day}-${randomDigits}`;
+        }
+
+        function hitungUsia(tglLahirStr) {
+            if (!tglLahirStr) return null;
+            let tglLahir;
+            if (typeof tglLahirStr === 'string' && tglLahirStr.includes('-')) {
+                const parts = tglLahirStr.split('T')[0].split('-');
+                if (parts.length === 3) {
+                    tglLahir = new Date(parts[0], parts[1] - 1, parts[2]);
+                }
+            } else {
+                tglLahir = new Date(tglLahirStr);
+            }
+
+            if (!tglLahir || isNaN(tglLahir.getTime())) return null;
+
+            const today = new Date();
+            let usia = today.getFullYear() - tglLahir.getFullYear();
+            const m = today.getMonth() - tglLahir.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < tglLahir.getDate())) usia--;
+            return usia >= 0 ? usia : null;
+        }
+
+        window.onload = function() {
+            generateNIJ();
+            loadDataFromSpreadsheet();
+        };
+
+        // Fetch Data Awal dan Safe Parsing JSON Jemaat
+        function loadDataFromSpreadsheet() {
+            showLoading("Memuat data dari Google Sheets...");
+            fetch(`${SCRIPT_URL}?action=getInitialData`)
+                .then(res => res.json())
+                .then(response => {
+                    hideLoading();
+
+                    dataJemaatList = (response.jemaat || []).map(item => {
+                        let parsedAnak = [];
+                        if (typeof item.anak === 'string' && item.anak.trim() !== '') {
+                            try { parsedAnak = JSON.parse(item.anak); } catch(e) { parsedAnak = []; }
+                        } else if (Array.isArray(item.anak)) {
+                            parsedAnak = item.anak;
+                        }
+
+                        return {
+                            ...item,
+                            usiaKK: item.usiaKK ?? hitungUsia(item.tglLahirKK),
+                            usiaIstri: item.usiaIstri ?? hitungUsia(item.tglLahirIstri),
+                            anak: parsedAnak
+                        };
+                    });
+
+                    dataKeuanganList = response.keuangan || [];
+                    dataInventarisList = response.inventaris || [];
+                    dataJadwalList = response.jadwal || [];
+
+                    renderTabelJemaat();
+                    renderTabelKeuangan();
+                    renderTabelInventaris();
+                    renderTabelJadwal();
+                    updateCharts();
+                })
+                .catch(err => {
+                    hideLoading();
+                    console.error("Gagal mengambil data:", err);
+                });
+        }
+
+        // Simpan Data Jemaat ke Google Sheets
+        function simpanData(e) {
+            e.preventDefault();
+            showLoading("Menyimpan Data Jemaat...");
+
+            const kkLahir = document.getElementById('tglLahirKK').value;
+            const istriLahir = document.getElementById('tglLahirIstri').value;
+
+            const anakList = [];
+            for (let i = 1; i <= 4; i++) {
+                const nama = document.getElementById(`namaAnak${i}`).value;
+                const tgl = document.getElementById(`tglLahirAnak${i}`).value;
+                const jk = document.getElementById(`jkAnak${i}`).value;
+                if (nama && nama.trim() !== "") {
+                    anakList.push({
+                        nama: nama.trim(),
+                        tglLahir: tgl,
+                        usia: hitungUsia(tgl),
+                        jk: jk
+                    });
+                }
+            }
+
+            const newJemaat = {
+                nij: document.getElementById('nij').value,
+                namaKK: document.getElementById('namaKK').value.trim(),
+                tglLahirKK: kkLahir,
+                usiaKK: hitungUsia(kkLahir),
+                tlpKK: document.getElementById('tlpKK').value.trim(),
+                pekerjaanKK: document.getElementById('pekerjaanKK').value.trim(),
+                jkKK: "Laki-laki",
+                namaIstri: document.getElementById('namaIstri').value.trim() || "-",
+                tglLahirIstri: istriLahir,
+                usiaIstri: hitungUsia(istriLahir),
+                jkIstri: "Perempuan",
+                alamat: document.getElementById('alamat').value.trim(),
+                anak: anakList
+            };
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "simpanJemaat", data: newJemaat })
+            })
+            .then(res => res.json())
+            .then(res => {
+                hideLoading();
+                alert(`Data Berhasil Disimpan di Google Sheets!\nNIJ: ${newJemaat.nij}`);
+                dataJemaatList.push(newJemaat);
+                document.getElementById('formJemaat').reset();
+                document.getElementById('jkKK').value = "Laki-laki";
+                document.getElementById('jkIstri').value = "Perempuan";
+                generateNIJ();
+                showSection('tabel-jemaat');
+            })
+            .catch(err => {
+                hideLoading();
+                alert("Gagal menyambung ke server. Silakan coba lagi.");
+            });
+        }
+
+        function renderTabelJemaat() {
+            const tbody = document.getElementById('bodyTabelJemaat');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (!dataJemaatList || dataJemaatList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8; padding: 1.5rem;">Belum ada data jemaat.</td></tr>`;
+                return;
+            }
+
+            dataJemaatList.forEach(item => {
+                const tr = document.createElement('tr');
+                const jmlAnak = Array.isArray(item.anak) ? item.anak.length : 0;
+
+                tr.innerHTML = `
+                    <td><strong>${item.nij || '-'}</strong></td>
+                    <td>${item.namaKK || '-'}</td>
+                    <td>${item.usiaKK !== null && item.usiaKK !== undefined && item.usiaKK !== '' ? item.usiaKK + ' Thn' : '-'}</td>
+                    <td>${item.tlpKK || '-'}</td>
+                    <td>${item.namaIstri || '-'}</td>
+                    <td>${item.usiaIstri !== null && item.usiaIstri !== undefined && item.usiaIstri !== '' ? item.usiaIstri + ' Thn' : '-'}</td>
+                    <td>${item.alamat || '-'}</td>
+                    <td>${jmlAnak} Anak</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateCharts() {
+            let jmlLaki = 0, jmlPerempuan = 0;
+            let usiaBalita = 0, usiaKanak = 0, usiaRemajaAwal = 0, usiaRemajaAkhir = 0, usiaDewasaAwal = 0, usiaDewasaAkhir = 0, usiaLansia = 0;
+
+            function prosesUsiaDanJK(usia, jk) {
+                if (jk === "Laki-laki") jmlLaki++;
+                if (jk === "Perempuan") jmlPerempuan++;
+
+                if (usia !== null && usia !== undefined && usia !== '') {
+                    usia = Number(usia);
+                    if (usia <= 4) usiaBalita++;
+                    else if (usia <= 11) usiaKanak++;
+                    else if (usia <= 16) usiaRemajaAwal++;
+                    else if (usia <= 25) usiaRemajaAkhir++;
+                    else if (usia <= 35) usiaDewasaAwal++;
+                    else if (usia <= 45) usiaDewasaAkhir++;
+                    else usiaLansia++;
+                }
+            }
+
+            dataJemaatList.forEach(item => {
+                prosesUsiaDanJK(item.usiaKK, item.jkKK);
+                if (item.namaIstri && item.namaIstri !== "-") {
+                    prosesUsiaDanJK(item.usiaIstri, item.jkIstri);
+                }
+                if (Array.isArray(item.anak)) {
+                    item.anak.forEach(a => prosesUsiaDanJK(a.usia, a.jk));
+                }
+            });
+
+            const canvasGender = document.getElementById('chartGender');
+            if (canvasGender) {
+                const ctxGender = canvasGender.getContext('2d');
+                if (chartGenderInstance) chartGenderInstance.destroy();
+                chartGenderInstance = new Chart(ctxGender, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Laki-laki', 'Perempuan'],
+                        datasets: [{ data: [jmlLaki, jmlPerempuan], backgroundColor: ['#162b50', '#c5a059'] }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
+
+            const canvasUsia = document.getElementById('chartUsia');
+            if (canvasUsia) {
+                const ctxUsia = canvasUsia.getContext('2d');
+                if (chartUsiaInstance) chartUsiaInstance.destroy();
+                chartUsiaInstance = new Chart(ctxUsia, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Balita (0-4)', 'Kanak (5-11)', 'Remaja Awal (12-16)', 'Remaja Akhir (17-25)', 'Dewasa Awal (26-35)', 'Dewasa Akhir (36-45)', 'Lansia (>45)'],
+                        datasets: [{ label: 'Jumlah Jiwa', data: [usiaBalita, usiaKanak, usiaRemajaAwal, usiaRemajaAkhir, usiaDewasaAwal, usiaDewasaAkhir, usiaLansia], backgroundColor: '#0b1c3d' }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                });
+            }
+        }
+
+        // Keuangan
+        function tambahKeuangan(e) {
+            e.preventDefault();
+            showLoading("Menyimpan Catatan Keuangan...");
+
+            const ket = document.getElementById('ketKeuangan').value;
+            const tipe = document.getElementById('tipeKeuangan').value;
+            const nominal = document.getElementById('nominalKeuangan').value;
+            const tgl = new Date().toISOString().split('T')[0];
+
+            const payload = { tanggal: tgl, keterangan: ket, jenis: tipe, nominal: nominal };
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "tambahKeuangan", data: payload })
+            })
+            .then(res => res.json())
+            .then(res => {
+                hideLoading();
+                dataKeuanganList.unshift(payload);
+                renderTabelKeuangan();
+                alert('Catatan Keuangan Berhasil Disimpan!');
+                e.target.reset();
+            });
+        }
+
+        function renderTabelKeuangan() {
+            const tbody = document.getElementById('tabelKeuanganBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            dataKeuanganList.forEach(item => {
+                const tr = document.createElement('tr');
+                const colorStyle = item.jenis === 'Pemasukan' ? 'color:var(--success-color); font-weight:bold;' : 'color:#c53030; font-weight:bold;';
+                tr.innerHTML = `<td>${item.tanggal}</td><td>${item.keterangan}</td><td><span style="${colorStyle}">${item.jenis}</span></td><td>Rp ${Number(item.nominal).toLocaleString('id-ID')}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Inventaris
+        function tambahInventaris(e) {
+            e.preventDefault();
+            showLoading("Menyimpan Data Inventaris...");
+
+            const barang = document.getElementById('namaBarang').value;
+            const jumlah = document.getElementById('jumlahBarang').value;
+            const kondisi = document.getElementById('kondisiBarang').value;
+
+            const payload = { namaBarang: barang, jumlah: jumlah, kondisi: kondisi };
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "tambahInventaris", data: payload })
+            })
+            .then(res => res.json())
+            .then(res => {
+                hideLoading();
+                dataInventarisList.unshift(payload);
+                renderTabelInventaris();
+                alert('Aset Inventaris Berhasil Disimpan!');
+                e.target.reset();
+            });
+        }
+
+        function renderTabelInventaris() {
+            const tbody = document.getElementById('tabelInventarisBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            dataInventarisList.forEach(item => {
+                const tr = document.createElement('tr');
+                const condColor = item.kondisi === 'Baik' ? 'color:var(--success-color); font-weight:bold;' : 'color:#c53030; font-weight:bold;';
+                tr.innerHTML = `<td>${item.namaBarang}</td><td>${item.jumlah} Unit</td><td><span style="${condColor}">${item.kondisi}</span></td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Jadwal
+        function loginAdmin() {
+            const passwordInput = prompt("Masukkan Password Admin:");
+            if (passwordInput === "GSKI123") {
+                alert("Login Admin Berhasil!");
+                document.getElementById('adminLockBox').style.display = 'none';
+                document.getElementById('adminJadwalContent').style.display = 'block';
+            } else if (passwordInput !== null) {
+                alert("Password Salah!");
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('adminLockBox').style.display = 'block';
+            document.getElementById('adminJadwalContent').style.display = 'none';
+        }
+
+        function tambahJadwal(e) {
+            e.preventDefault();
+            showLoading("Menyimpan Jadwal...");
+
+            const nama = document.getElementById('namaIbadah').value.trim();
+            const waktuInput = document.getElementById('waktuIbadah').value;
+            const pembicara = document.getElementById('pembicara').value.trim();
+            const jumlahHadir = document.getElementById('jumlahHadir').value.trim();
+
+            let waktuFormatted = waktuInput;
+            if (waktuInput) {
+                const dt = new Date(waktuInput);
+                const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                waktuFormatted = `${days[dt.getDay()]}, ${dt.getDate()} ${months[dt.getMonth()]} ${dt.getFullYear()} - ${String(dt.getHours()).padStart(2,'0')}.${String(dt.getMinutes()).padStart(2,'0')} WIB`;
+            }
+
+            const payload = { namaKegiatan: nama, waktuFormatted: waktuFormatted, pembicara: pembicara, jumlahHadir: jumlahHadir };
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "tambahJadwal", data: payload })
+            })
+            .then(res => res.json())
+            .then(res => {
+                hideLoading();
+                dataJadwalList.unshift(payload);
+                renderTabelJadwal();
+                alert('Jadwal & Presensi Berhasil Disimpan!');
+                e.target.reset();
+            });
+        }
+
+        function renderTabelJadwal() {
+            const tbody = document.getElementById('tabelJadwalBody');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+            dataJadwalList.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.namaKegiatan}</td>
+                    <td>${item.waktuFormatted}</td>
+                    <td>${item.pembicara}</td>
+                    <td><strong>${item.jumlahHadir} Jiwa</strong></td>
+                    <td><span style="color: var(--success-color); font-weight: bold;">Terbuka</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
